@@ -10,16 +10,18 @@
 
 This document identifies the **reliable, authoritative turn ending events** in the Codex centralized sse_lines.jsonl log file. The analysis covers normal completions, canceled turns, and various edge cases.
 
+**CRITICAL:** Not all rounds represent user prompts. Only rounds containing `turn.user_message` events are user-initiated turns. System/configuration rounds should be excluded when counting user prompts.
+
 ## Key Findings
 
-### Authoritative Turn Ending Events
+### Authoritative Turn Ending Events (User-Initiated Rounds Only)
 
 | Event | Count | Description | Reliability |
 |-------|-------|-------------|-------------|
-| `turn.response.completed` | 20 | Normal successful turn completion | **PRIMARY** - Most reliable |
+| `turn.response.completed` | 23 | Normal successful turn completion | **PRIMARY** - Most reliable |
 | `turn.response.aborted` | 2 | Canceled/interrupted turn | **PRIMARY** - Definitive for cancellations |
 | `turn.shutdown_complete` | 2 | Session shutdown | **SECONDARY** - Session-level, not turn-level |
-| `codex.idle` | 20 | System returned to idle state | **UNRELIABLE** - Often appears out of order |
+| `codex.idle` | ~23 | System returned to idle state | **UNRELIABLE** - Often appears out of order |
 
 ### Data Structure Hierarchy
 
@@ -38,7 +40,7 @@ SESSION
 
 ### 1. Normal Turn Completion: `turn.response.completed`
 
-**Occurrence:** 20 completed rounds (out of 29 total rounds)
+**Occurrence:** 23 completed rounds (out of 26 user-initiated rounds)
 
 **Typical Ending Sequence:**
 ```
@@ -113,24 +115,27 @@ turn.task_started          ← Next turn begins
 
 ### 4. Incomplete/Ongoing Rounds
 
-**Occurrence:** 7 rounds without completion or abort events
+**Occurrence (All Rounds):** 7 rounds without completion or abort events
+**Occurrence (User-Initiated Only):** 1 round (3.8% of user prompts)
 
 **Categories:**
-1. **Configuration rounds** - Short-lived rounds with only session setup:
+1. **Configuration rounds** - Short-lived rounds with only session setup (NO user message):
    ```
    turn.session_configured
    turn.list_custom_prompts_response
+   [No turn.user_message - NOT a user prompt]
    ```
 
-2. **Current/ongoing round** - Still actively streaming:
+2. **Current/ongoing user round** - User-initiated, still actively streaming:
    ```
+   turn.user_message           ← User prompt present
    [... many delta events ...]
    turn.response.delta
    response.output_text.delta
-   [no ending event yet]
+   [no ending event yet - still in progress]
    ```
 
-3. **Crashed/interrupted rounds** - Ended without proper cleanup
+3. **Crashed/interrupted rounds** - Ended without proper cleanup (rare)
 
 ## Event Type Distribution
 
@@ -279,17 +284,29 @@ Despite being present 20 times, `codex.idle`:
 
 ### 4. Response vs Turn Completion
 - **`response.completed`**: Marks the end of ONE API response (141 occurrences)
-- **`turn.response.completed`**: Marks the end of the ENTIRE turn/round (20 occurrences)
+- **`turn.response.completed`**: Marks the end of the ENTIRE turn/round (23 occurrences in user-initiated rounds)
 
 A turn may have multiple responses but only one turn completion.
 
+### 5. System vs User-Initiated Rounds
+**CRITICAL:** Not all rounds represent user prompts. Filter for `turn.user_message` to identify user-initiated turns.
+
+- **Total rounds in log:** 32
+- **User-initiated rounds** (with `turn.user_message`): 26
+- **System/configuration rounds** (no user message): 6
+
 ## Summary Statistics
 
-- **Total Rounds:** 29
-- **Completed Rounds:** 21 (72.4%)
-- **Aborted Rounds:** 2 (6.9%)
-- **Shutdown Rounds:** 2 (6.9%)
-- **Incomplete/Ongoing Rounds:** 7 (24.1%)
+### All Rounds (n=32)
+- **Total Rounds:** 32
+- **User-Initiated Rounds:** 26 (81.3%)
+- **System/Config Rounds:** 6 (18.8%)
+
+### User-Initiated Rounds Only (n=26)
+- **Completed Rounds:** 23 (88.5%)
+- **Aborted Rounds:** 2 (7.7%)
+- **Incomplete/Ongoing Rounds:** 1 (3.8%)
+- **Average Duration (completed):** 73.5 seconds (range: 3.2s - 382.0s)
 - **Average Responses per Round:** ~5 (ranging from 1 to 22)
 
 ## Conclusion
@@ -309,11 +326,15 @@ A turn may have multiple responses but only one turn completion.
 
 ### Best Practice:
 
-When determining if a turn has ended:
-1. Look for `turn.response.completed` (normal end)
-2. Look for `turn.response.aborted` (canceled end)
+**When counting user prompts:**
+1. **FILTER for rounds with `turn.user_message` event** (ignore system/config rounds)
+2. Count only these user-initiated rounds
+
+**When determining if a user-initiated turn has ended:**
+1. Look for `turn.response.completed` (normal end) - 88.5% of cases
+2. Look for `turn.response.aborted` (canceled end) - 7.7% of cases
 3. Check `turn.shutdown_complete` if analyzing session boundaries
-4. Consider rounds without these events as incomplete/ongoing
+4. Consider rounds without these events as incomplete/ongoing - 3.8% of cases
 
 ---
 
