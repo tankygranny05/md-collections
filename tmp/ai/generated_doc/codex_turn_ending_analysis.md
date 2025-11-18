@@ -16,10 +16,13 @@ This document identifies the **reliable, authoritative turn ending events** in t
 
 ### Authoritative Turn Ending Events (User-Initiated Rounds Only)
 
+**Total User-Initiated Rounds (with `turn.user_message`):** 26
+
 | Event | Count | Description | Reliability |
 |-------|-------|-------------|-------------|
-| `turn.response.completed` | 23 | Normal successful turn completion | **PRIMARY** - Most reliable |
-| `turn.response.aborted` | 2 | Canceled/interrupted turn | **PRIMARY** - Definitive for cancellations |
+| `turn.response.completed` | 23 of 26 | Normal successful turn completion | **PRIMARY** - Most reliable |
+| `turn.response.aborted` | 2 of 26 | Canceled/interrupted turn | **PRIMARY** - Definitive for cancellations |
+| No ending event | 1 of 26 | Incomplete/ongoing turn | In progress or crashed |
 | `turn.shutdown_complete` | 2 | Session shutdown | **SECONDARY** - Session-level, not turn-level |
 | `codex.idle` | ~23 | System returned to idle state | **UNRELIABLE** - Often appears out of order |
 
