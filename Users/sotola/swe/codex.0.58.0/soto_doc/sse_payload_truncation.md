@@ -1,5 +1,7 @@
 # [Created by Codex: 019a9662-000f-77e2-9575-3e0f02624e93]
 # [Edited by Codex: 019a9662-000f-77e2-9575-3e0f02624e93]
+# [Edited by Codex: 019a9855-9634-7460-af00-a943504556c2]
+# [Edited by Codex: 019a9aea-13e3-7dd0-aef9-191e0ea21244]
 
 # SSE Payload Truncation Requirements
 
@@ -9,7 +11,7 @@ Recent ingestion failures (`sqlite3.DataError: string or blob too big`) trace ba
 
 ## Objective
 
-Add a deterministic hard cap (~50 MB) on any text blob that Codex serializes into an SSE payload, while keeping the JSON schema unchanged and signalling to downstream consumers that data was truncated.
+Add a deterministic hard cap (~5 MB) on any text blob that Codex serializes into an SSE payload, while keeping the JSON schema unchanged and signalling to downstream consumers that data was truncated.
 
 ## Scope
 
@@ -23,12 +25,21 @@ Add a deterministic hard cap (~50 MB) on any text blob that Codex serializes i
 ## Functional Requirements
 
 1. **Byte-Aware Cap**  
-   - Define a constant `MAX_SSE_FIELD_BYTES = 50 * 1024 * 1024` (configurable via CLI flag or env).  
+   - Define a constant `MAX_SSE_FIELD_BYTES = 5 * 1024 * 1024` (configurable via CLI flag or env).  
    - When serializing any dynamic string field, measure its UTF‑8 byte length.  
    - If the value exceeds the cap, slice it on a character boundary so the resulting substring remains valid UTF‑8.
 
+1.1 **`turn.exec.end` Specialization**  
+   - Cap the entire `turn.exec.end` SSE envelope at **300 KB**, regardless of the global 5 MB limit or env overrides.  
+   - Budget those 300 KB across the hot fields so we attack the actual bloater: 
+     - `payload.stdout`: 128 KiB budget.  
+     - `payload.aggregated_output`: 128 KiB budget.  
+     - `payload.formatted_output`: 128 KiB ÷ 3 ≈ 42 KiB budget (one third of the primary fields).  
+   - Apply the same UTF‑8 aware truncation helper + `... [truncated after N bytes, omitted M bytes]` suffix to each field *before* serialising the payload, then run the usual line-level clamp so the JSON string that lands in `~/centralized-logs/codex/sse_lines.jsonl` never exceeds 300 KB.  
+   - Document that `stdout` and `aggregated_output` own ~85% of the per-event allowance so downstream consumers know where the missing bytes went.
+
 2. **Structured Truncation Metadata**  
-   - Replace the original field value with `prefix + "… [truncated after 50MB]"`.  
+   - Replace the original field value with `prefix + "… [truncated after 5MB]"`.  
    - Attach adjacent metadata for downstream tooling, e.g.:
      ```json
      {
@@ -59,7 +70,7 @@ Add a deterministic hard cap (~50 MB) on any text blob that Codex serializes i
 
 ## Acceptance Criteria
 
-- Triggering a runaway command that previously produced multi-GB SSE lines now yields capped payloads ≤ 50 MB.  
+- Triggering a runaway command that previously produced multi-GB SSE lines now yields capped payloads ≤ 5 MB.  
 - SQLite ingestion of capped logs succeeds without `string or blob too big` errors.  
 - Automated tests simulate oversized stdout and confirm truncation metadata.  
 - Documentation (README or CHANGELOG) states the new cap and how to adjust it.
@@ -73,3 +84,5 @@ Add a deterministic hard cap (~50 MB) on any text blob that Codex serializes i
 
 # [Created by Codex: 019a9662-000f-77e2-9575-3e0f02624e93]
 # [Edited by Codex: 019a9662-000f-77e2-9575-3e0f02624e93]
+# [Edited by Codex: 019a9855-9634-7460-af00-a943504556c2]
+# [Edited by Codex: 019a9aea-13e3-7dd0-aef9-191e0ea21244]
