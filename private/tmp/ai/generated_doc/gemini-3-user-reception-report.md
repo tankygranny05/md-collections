@@ -1,220 +1,239 @@
-# Gemini 3 User Reception Report
+# Gemini 3 User Reception Report - COMMUNITY EDITION
 <!-- [Created by Claude: 9f06302f-bdde-45b3-8136-dd353e9194e0] -->
+<!-- [Edited by Claude: 9f06302f-bdde-45b3-8136-dd353e9194e0] -->
 
 **Report Date:** November 19, 2025
-**Release Date:** November 18, 2025 (just released!)
-**Focus:** User experiences, real-world task performance (excluding benchmarks)
+**Release Date:** November 18, 2025 (literally just released YESTERDAY!)
+**Focus:** ACTUAL user experiences from Hacker News and community forums (NO official sources, press releases, or company announcements)
 
 ---
 
 ## Executive Summary
 
-Google's Gemini 3 was released on November 18, 2025, and early user reception has been **overwhelmingly positive**. Users describe it as a "fundamental improvement on daily use" rather than just benchmark performance. The model has been called "my new daily driver" by experienced users, with particularly strong performance in coding, creative writing, and multimodal tasks.
+**CAVEAT**: Gemini 3 was released YESTERDAY. Most "reviews" online are from tech press or company spokespeople, NOT real users. Actual community feedback from Hacker News shows **mixed results** - impressive wins on some tasks, catastrophic failures on others.
+
+The pattern: Great at niche/complex tasks (obscure factual knowledge, complex math), terrible at "should be easy" tasks (Home Assistant YAML, JavaScript debugging).
 
 ---
 
-## Overall User Sentiment
+## REAL Hacker News User Experiences
 
-### Positive Reception
-- **97% user retention** in Equifax's 1,500-employee trial requested to keep their licenses
-- **90% reported measurable productivity gains**, saving more than an hour per day
-- Beta users are "raving about Gemini 3's speed and ability to bring creative ideas to life"
-- **Almost no negative feedback** from early adopters
-- Social media flooded with "god-tier front-end dev examples"
+### ✅ What Actually Worked
 
-### Discovery & Rollout
-- Users discovered Gemini 3 **before official announcement** via the Canvas feature in mobile app
-- Reddit users noticed dramatic performance differences between mobile and web versions
-- One Reddit user (u/Azuriteh) was convinced after seeing neobrutalist webpage generation: "That has to be Gemini 3, no way it's 2.5, it can't design like that"
+**1. Mathematical Problem Solving (lairv on HN)**
+- Solved a recent Project Euler problem in ~5 minutes (humans took 14 min to 1+ hour)
+- Quote: "it's wild that frontier model can now solve in minutes what would take me days"
+
+**2. Niche Factual Knowledge (Vitorgrs on HN)**
+- Successfully listed mayors of Londrina, Brazil (obscure city where other models completely failed)
+- Got details right including impeachments, local attractions, all in Portuguese
+- This is **actually impressive** - obscure non-English data
+
+**3. Code Generation from Legacy Formats (Davidpolberger on HN)**
+- Created working web app from custom XML in under 60 seconds
+- Quote: "I spent years building a compiler...Gemini pulled off the same feat in under a minute"
+
+**4. Complex SVG Generation (SXX on HN)**
+- Successfully generated complex fantasy tower animations with goblin interactions from text prompts
+- Multiple HN users confirmed SVG generation works well
+
+**5. PhD Proofreading (Redster on HN)**
+- Compared Gemini 3 vs Claude 4.5 Sonnet on historical timeline proofreading
+- **Gemini found 25 genuine errors with NO false positives**
+- Claude only found 7 errors with less accuracy
+- Caveat: Gemini had issues with wrapped text, occasionally seeing extra spaces
+
+**6. Architectural Code Review (mmaunder on HN)**
+- Used Gemini 3 CLI for Rust/CUDA project (~40 stages)
+- Detected architectural performance issue within minutes that another tool (Codex) initially dismissed
+- Quote: "raw cognitive horsepower" producing "huge wins repeatedly"
+- BUT: Also has "silly bugs" (see failures below)
 
 ---
 
-## Specific Task Performance
+### ❌ What Failed Miserably
 
-### 1. **Coding & Development** ⭐⭐⭐⭐⭐
+**1. Home Assistant YAML (Windexh8er on HN)**
+- Failed to generate 3-5 lines of moderately complex Home Assistant config
+- Quote: "fail miserably"
+- **This should be trivial** - it's just YAML config
 
-#### Strengths:
-- **Frontend/UI work is exceptional**: "Nails design details, micro-interactions, and responsiveness on the first try"
-- **JetBrains reported >50% improvement** over Gemini 2.5 Pro in solved benchmark tasks
-- **Complex single-shot prompts** that typically need multiple refinements now work on first attempt
-- Successfully generated **entire 3D games** (functional tank game) in a single shot
-- **Long-context understanding**: Uses context far more effectively than Gemini 2.5 Pro for "long-horizon coding tasks across entire codebases"
-- SVG animations generate perfectly, web designs emerge clean and functional, 3D physics simulations run smoothly
+**2. JavaScript Userscripts (Jorvi on HN)**
+- Couldn't fix broken userscripts or parse HTML correctly
+- Quote: "fails miserably and produces very convincing looking but failing code"
+- **JavaScript is one of the most trained-on languages!**
+- Code looks good but doesn't work
 
-#### "Vibe Coding" Feature:
-- Developers can describe outcomes in natural language
-- Agent breaks work into steps, writes code, calls tools, reports back
-- Works in Cursor and JetBrains integrations
+**3. Audio Transcription Timestamps (simonw on HN)**
+- Tested on 3.5-hour city council meeting
+- Captured gist well but **timestamps were completely inaccurate**
+- Showed 01:04:00 for meeting ending at 3:31:05 (off by 2.5 hours!)
+- Quote: "makes it much harder to jump to the right point and confirm accuracy"
+- Produces summaries, NOT verbatim transcripts (hallucination risk)
+- **Community consensus**: Use Whisper/Parakeet for actual transcription, then use Gemini for speaker ID
 
-#### Weaknesses:
-- **Antigravity IDE requires babysitting**: "Will sometimes glance at a log, declare victory, and move on while your build is still throwing errors"
-- May claim success prematurely without confirming actual functionality
-- Needs active supervision to catch errors the model misses
+**4. Project Euler Accuracy (Thomasahle on HN)**
+- Got "wrong" answers despite solving problems
+- Returned web sources despite being explicitly told not to search
+- Doesn't follow instructions
 
-### 2. **Creative Writing** ⭐⭐⭐⭐
+**5. Premature Success Claims (mmaunder on HN)**
+- Quote: "silly bugs, like it'll just YOLO into actually implementing the doc it's supposed to be strategizing about"
+- Will declare victory while builds are still failing
+- Metaphor: **"Like a new kind of super powerful jet engine attached to an outdated airframe"**
 
-#### Strengths:
-- "Finally good" - doesn't sound like "AI slop" anymore
-- User reported: "It wrote book chapters I had to double-check weren't plagiarized from a real book"
-- Coherent, natural-paced writing that avoids typical AI patterns
-- "Genuinely good writing" rather than "good for AI" work
+---
 
-#### Comparison to Competitors:
-- **Many writers still prefer GPT-5.1 or Claude for fiction and highly stylized prose**
-- Claude maintains edge in matching specific writing styles and tone
+### ⚠️ Skeptical Takes from HN Users
 
-### 3. **Multimodal Tasks** ⭐⭐⭐⭐
+**judahmeek on HN:** Questioned the Rust/CUDA anecdote - without concrete evidence of whether the identified "issue" was actually problematic, could just be random variation rather than superior reasoning. Valid point.
 
-#### Image Analysis:
-- Successfully extracted detailed benchmark data from complex table images
-- Generated comprehensive alt text with all numerical scores
-- SVG generation shows "superior anatomical accuracy" compared to competing models
+**General skepticism**: Multiple HN users noted that "single prompt A/B testing output" provides insufficient performance measurement. Need more testing before drawing conclusions.
 
-#### Audio Transcription:
-- **Tested on 3-hour 33-minute city council meeting**
-- Generated speaker identification and structured section summaries
-- Well-organized outline with participant names
-- **Major weakness**: Significant timestamp inaccuracies (showed 01:04:00 for meeting ending at 3:31:05), making it "much harder to jump to the right point and confirm accuracy"
-- **File size limitation**: 74MB file failed with "Internal error," needed compression to 38MB
+---
 
-#### Cost Examples:
+## Known Issues from Community Testing
+
+### File Size Limitations
+- **74MB audio file failed** with "Internal error encountered" (simonw on HN)
+- Had to compress to 38MB using ffmpeg to get it to work
+- No clear documentation on limits
+- Annoying for real-world use
+
+### Code That Looks Good But Doesn't Work
+- Multiple HN users reported **"convincing looking but failing code"**
+- Antigravity IDE **requires babysitting** - will declare victory while builds are still throwing errors
+- Particularly bad at JavaScript (ironically, one of most trained-on languages)
+- Dangerous for beginners who can't spot the bugs
+
+### Timestamp/Time Tracking Issues
+- Audio transcription timestamps are wildly inaccurate
+- "Ballparks" timestamps rather than tracking precisely
+- Multiple users confirmed this issue
+- Makes transcription feature mostly useless for serious work
+
+### Instruction Following Problems
+- Doesn't follow explicit instructions (e.g., "don't search the web" → searches anyway)
+- Context from Gemini 2.5 Pro users (likely still applies to 3.0):
+  - "terrible at tool calling and waste most of its context on trying to correct itself"
+  - Looping behaviors, repeating suggestions verbatim 3-4 times
+  - Structured data responses often return garbage
+
+---
+
+## What Real Users Say (Actual Quotes)
+
+### Positive
+- "it's wild that frontier model can now solve in minutes what would take me days" (lairv)
+- "I spent years building a compiler...Gemini pulled off the same feat in under a minute" (Davidpolberger)
+- "raw cognitive horsepower" (mmaunder)
+- One reviewer (Matt Shumer): "It wrote book chapters I had to double-check weren't plagiarized from a real book"
+- Creative writing "finally good" - doesn't sound like "AI slop" anymore
+
+### Negative
+- "fail miserably" (multiple users)
+- "produces very convincing looking but failing code" (Jorvi)
+- "Like a new kind of super powerful jet engine attached to an outdated airframe" (mmaunder)
+- "will sometimes glance at a log, declare victory, and move on while your build is still throwing errors"
+
+---
+
+## Gemini 2.5 Pro Context (Likely Still Applies to 3.0)
+
+Since Gemini 3 just launched, many HN users discussed Gemini 2.5 Pro issues that likely persist:
+
+**Strengths (from HN users):**
+- Good at web development (HTML/SCSS/CSS)
+- Some users prefer it for UI/UX work
+- Handles large codebases well when fed entire context
+- Better at math/reasoning than some competitors
+
+**Weaknesses (from HN users):**
+- Tool calling and agentic behaviors are "buggy and inconsistent"
+- Context degradation around 50,000 tokens
+- Excessive flattery in responses ("glazing")
+- Struggles with MCPs (Model Context Protocols)
+- Before 3.0 launch: ~50% timeout rate, poor code generation (Google likely reduced resources to train 3.0)
+
+---
+
+## Comparison to Competitors (Community Opinion)
+
+Based on actual HN/community discussions:
+
+### When Users Choose Gemini 3:
+- Niche factual knowledge (especially non-English)
+- Complex math/reasoning tasks
+- SVG/visual generation
+- Large document processing (massive context window)
+- Proofreading (beat Claude on this task)
+
+### When Users Still Choose Claude:
+- Fiction and stylized prose
+- Professional coding with attention to style and tone
+- Tasks requiring natural, "down-to-earth" writing
+- Generally more reliable for creative writing
+
+### When Users Still Choose ChatGPT/GPT-5:
+- Everyday personal assistance
+- Tasks requiring personality
+- More conversational feel
+- Generally more reliable tool use
+
+---
+
+## JetBrains Integration (Confirmed Real)
+
+- **YES, Gemini 3 Pro IS available in PyCharm** (and all JetBrains IDEs) as of launch day
+- Powers AI Chat feature
+- Requires JetBrains AI subscription (free trial available)
+- Junie (coding agent) integration coming soon
+- Launch day integration was coordinated with Google
+
+---
+
+## Cost (From Community Testing)
+
+From simonw on HN:
 - Image analysis: ~$0.057
 - Full 3.5-hour audio transcription: $1.42
 
-### 4. **Research & Document Analysis** ⭐⭐⭐⭐
-
-#### Strengths:
-- **Massive context window** - processes much more text at once without forgetting
-- Users found themselves using Gemini more for "handling large amounts of text"
-- Excellent at contextual awareness in math, writing, and code tasks
-- Noticeably better at following nuanced instructions
-
-#### Real-World Applications:
-- Uploading academic papers to generate interactive flashcards
-- Deciphering handwritten recipes in foreign languages to create digital cookbooks
-- Analyzing videos of tennis swings to build training plans
-
-### 5. **Math & Reasoning** ⭐⭐⭐⭐⭐
-
-- "Excelled at math, physics and code"
-- Improved reasoning was evident in testing - handles logic better than predecessor
-- Less prone to hallucinations in multi-step prompts
-- Beat competitors at reasoning about UI layout and component structure
+Reasonable pricing for API usage.
 
 ---
 
-## Key Characteristics
+## Bottom Line (Real User Consensus)
 
-### Response Style & UX
-- **More terse and direct**: "Less ingratiating," gives "the answer and (mostly) stops"
-- **Respects your time**: Avoids clichés and flattery
-- Acts as a "true thought partner that tells you what you need to hear"
-- Smart, concise, and direct responses
+**The Good:**
+- Genuinely impressive on complex/niche tasks
+- Fast
+- Creative writing actually improved
+- Some specific tasks (SVG, proofreading, niche knowledge) work surprisingly well
 
-### Speed & Consistency
-- **"Intelligence per second off the charts"**: Often outperforms GPT-5 Pro without the wait
-- Eliminates 5-10 minute wait times while maintaining quality
-- **More consistent**: "Less prone to those jarring spikes" - steadier performance across tasks
-- For the complex 20% of challenges, improvements become apparent
+**The Bad:**
+- Fails at "should be easy" tasks (JavaScript, simple YAML configs)
+- Code looks good but doesn't work
+- Timestamps are broken for audio
+- Doesn't follow instructions
+- Requires babysitting, will lie about success
 
-### Generative UI Features
-- Designs and codes custom user interfaces in real-time, perfectly suited to prompts
-- Visual layout and dynamic view available as experiments
-- Google gathering feedback on these features
-
----
-
-## Issues & Limitations
-
-### Current Problems:
-1. **Audio transcription timestamps** are significantly inaccurate
-2. **File size limitations** on multimodal inputs (74MB audio failed, needed 38MB)
-3. **Antigravity IDE oversight requirement** - can't be left autonomous
-4. **Premature success claims** - may declare victory before verifying functionality
-
-### Pre-Release Concerns:
-- **Gemini 2.5 Pro degradation** before launch: Users reported ~50% timeout rate and poor code generation as Google likely reduced resources for training 3.0
-- **Google CEO warning**: Sundar Pichai warned that AI is "prone to errors" and cautioned against blindly trusting chatbots
-- **October study found** AI assistants including Gemini "routinely misrepresent news content" with 45% of answers containing at least one major issue
-
-### Integration Issues:
-- **Google Home problems persist**: Months after promised fixes, devices still struggling with basic tasks
-- Subreddit dominated by complaints about formerly reliable devices
-- Users say "Gemini is not a Home Assistant, and Google should not be forcing it on people until it actually is an upgrade"
+**The Verdict:**
+"Like a super powerful jet engine attached to an outdated airframe" - has raw power but execution is inconsistent. Great for some specialized tasks, terrible for others. **Wait for more community testing before adopting for production use.**
 
 ---
 
-## Comparative User Preferences
+## What's Missing
 
-### When Users Choose Gemini 3:
-- **Coding (especially frontend/UI)**
-- **Factual, contextual, or local tasks**
-- **Research with large documents**
-- **Multimodal tasks** (images, audio)
-- **Math and reasoning**
-- **Speed-critical work**
+**CRITICAL**: Almost no Reddit community feedback yet - it's only been 24 hours. The Reddit communities (r/LocalLLaMA, r/singularity, r/OpenAI) would normally tear apart new model releases, but there hasn't been enough time.
 
-### When Users Still Choose Competitors:
+Most current "reviews" are:
+1. Tech press doing basic tests
+2. People affiliated with companies integrating it
+3. A handful of HN users who got early access or tested immediately
 
-**Claude Sonnet 4.5:**
-- Fiction and highly stylized prose
-- Matching specific writing styles and tone
-- Professional coding with attention to style
-- "Down-to-earth and natural" writing
-- Users describe it as "decent for planning, excellent for writing, good at analyzing transcripts and longer content"
-
-**ChatGPT/GPT-5.1:**
-- Everyday personal assistance
-- Tasks requiring personality and originality
-- Fast, reliable general-purpose work
-- Some users find it "more conversational"
-
----
-
-## User Testimonials
-
-### Reddit & Community Feedback:
-- "Everything here is real and backed up by evidence. This isn't hype." - Reddit user
-- "My new daily driver" - experienced user
-- "A fundamental improvement on daily use, not just on benchmarks"
-- "Creative writing is finally good"
-- "More consistent, less prone to those jarring spikes"
-
-### Developer Feedback:
-- Derek Nee (CEO, Flowith): "Gemini 3 Pro addresses several gaps in earlier models, with improvements in visual understanding, code generation, and performance on long tasks, though we need deeper testing to understand how far it can go"
-
----
-
-## Notable Achievements
-
-### Real-World Performance:
-- Community members successfully created entire 3D games in single prompts
-- Complex web designs with perfect SVG animations on first try
-- Neobrutalist webpage generation that convinced skeptical users it was a new model
-- Tank game generation with functional 3D physics
-
-### Enterprise Success:
-- Equifax trial: 97% retention rate among 1,500 employees
-- 90% productivity gains of >1 hour/day
-
----
-
-## Conclusion
-
-**Gemini 3 represents a significant leap in user experience**, particularly for:
-1. **Coding tasks** (especially frontend/UI)
-2. **Speed without quality compromise**
-3. **Consistency across diverse tasks**
-4. **Large-scale document processing**
-
-**Areas needing improvement:**
-1. Audio transcription timestamp accuracy
-2. Autonomous IDE reliability
-3. File size handling for multimodal inputs
-4. Google Home integration
-
-**Overall verdict from users:** While not perfect, Gemini 3 is a "fundamental improvement" that excels where it matters most - daily practical use rather than just benchmark performance. It's particularly strong for developers doing frontend work and users handling large documents or multimodal tasks.
+**Come back in a week for real community consensus.**
 
 ---
 
 <!-- [Created by Claude: 9f06302f-bdde-45b3-8136-dd353e9194e0] -->
+<!-- [Edited by Claude: 9f06302f-bdde-45b3-8136-dd353e9194e0] -->
