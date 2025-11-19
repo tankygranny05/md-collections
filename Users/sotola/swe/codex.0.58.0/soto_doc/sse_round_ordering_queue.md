@@ -61,9 +61,9 @@ This centralized writer removes the multi-writer race and is self-contained, whi
 
 ## Smoke tests
 
-After implementation (by the future coding task):
+Follow `soto_doc/basic_smoke_test_strategy.md` for every run (delete `/tmp/coder-agent-6f9d3`, run `codex --log-dir /tmp/coder-agent-6f9d3 exec "{prompt}"`, then inspect the logs). After implementation (by the future coding task):
 
-- Run a smoke prompt in exec or TUI with logging enabled, inspect the isolated `sse_lines.jsonl`, and verify every round ≥2 starts with `turn.user_message`.
+- Run a smoke prompt in exec, inspect the isolated `sse_lines.jsonl`, and verify every round ≥2 starts with `turn.user_message`.
 - Simulate a round lacking a user message (e.g., inject events manually) and ensure the watchdog flushes with a warning rather than deadlocking.
 - Confirm concurrency: fire multiple simultaneous events and ensure ordering now matches the queue rules.
 
