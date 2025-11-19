@@ -38,6 +38,7 @@ Worker behavior:
 4. When flushing, insert a 0.1 ms delay between writes to avoid reordering by the filesystem/OS scheduler on exit.
 5. After a round flush completes, advance to the next round (if buffered) and repeat the same gating rule.
 6. If a round never receives a user message (edge case), the worker must have a configurable timeout/fallback so the queue cannot deadlock; requirement: fail-safe by emitting buffered entries after an upper bound delay with a warning.
+7. Provide an escape hatch via `CODEX_SSE_ROUND_QUEUE_DISABLED=1` so we can temporarily fall back to the legacy multi-writer path if rollout issues arise.
 
 This centralized writer removes the multi-writer race and is self-contained, which drops the difficulty to a 5/10 change.
 
