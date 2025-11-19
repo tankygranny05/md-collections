@@ -1,6 +1,5 @@
 [Created by Claude: 7b21902b-517e-48bd-b992-8cbde47cf832]
 [Edited by Codex: 019a9aea-13e3-7dd0-aef9-191e0ea21244]
-[Edited by Codex: 019a9aea-13e3-7dd0-aef9-191e0ea21244]
 
 # Tool Output Coverage Verification
 
@@ -272,3 +271,4 @@ Note: No turn.exec.begin/end for non-shell tools
    - Would save 75.7% of duplicated data
 
 [Created by Claude: 7b21902b-517e-48bd-b992-8cbde47cf832]
+[Edited by Codex: 019a9aea-13e3-7dd0-aef9-191e0ea21244]
