@@ -40,4 +40,9 @@
 - **Turn API drift:** Monitor protocol changes and keep `turn_logging.rs` updated.
 - **Session lifecycle markers (optional):** If required later, add explicit start/resume/shutdown events to `sessions.jsonl`; decide schema before emitting.
 
+## Operational Guardrails for Coder Agents
+- Do not run the full test suite unless the user explicitly asks; prefer smoke/targeted checks (always in tmux).
+- Do not commit unless the user explicitly asks.
+- If a commit is requested, pause and confirm with the user before overwriting or amending another agent’s commit.
+
 [Edited by Codex: 019aa0c9-ebbf-7f71-9e80-1a7ff0af25c5]
