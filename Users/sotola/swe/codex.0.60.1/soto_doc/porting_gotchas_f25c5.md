@@ -6,3 +6,8 @@
 - Missing `turn.shutdown_complete` flush was pointed out by the user when counts still lagged; required priority handling and inline logging.
 - Exec surface didn’t show the injected agent ID; user reported the prompt display gap, fixed by printing the injection line under the user prompt.
 - Running tests outside tmux triggered macOS file-descriptor limits; user reminded to always run smoke/tests inside tmux to avoid false failures.
+
+## Operational Guardrails for Coder Agents
+- Do not run the full test suite unless the user explicitly asks; prefer smoke/targeted checks (always in tmux).
+- Do not commit unless the user explicitly asks.
+- If a commit is requested, pause and confirm with the user before overwriting or amending another agent’s commit.
