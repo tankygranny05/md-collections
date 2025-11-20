@@ -5,7 +5,7 @@
 **Analysis Date:** 2025-11-20
 **Files Compared:**
 - Old: `/Users/sotola/swe/claude-code-2.0.42/cli.js` (14MB)
-- New: `/Users/sotola/swe/archive/claude-code-2.0.47/cli.js` (10.2MB after formatting)
+- New: `/Users/sotola/swe/archive/claude-code-2.0.47/cli.js` (15MB after formatting)
 
 ---
 
@@ -17,7 +17,7 @@ The comparison between v2.0.42 and v2.0.47 shows significant changes, though man
 - Total diff lines: ~913,522 lines
 - Insertions: ~387,275
 - Deletions: ~322,715
-- File size change: 14MB → 10.2MB (after formatting)
+- File size change: 14MB → 15MB (after formatting, +7% increase)
 
 ---
 
@@ -115,11 +115,12 @@ The most significant architectural change is the removal/refactoring of the inli
 2. The logging approach changed significantly
 3. The functionality was removed entirely in this version
 
-### File Size Reduction
-The 3.8MB reduction in file size (14MB → 10.2MB) after formatting suggests:
-- Removal of duplicate or unused code
-- Better minification or bundling
-- Removal of debugging/development code
+### File Size Increase
+The 1MB increase in file size (14MB → 15MB) after formatting is expected due to:
+- Prettier adding whitespace and line breaks for readability
+- Breaking long lines into 80-character chunks adds newline characters
+- Consistent spacing and indentation increases file size
+- This is a formatting artifact, not a code content change
 
 ---
 
@@ -160,6 +161,6 @@ This is expected in minified/bundled code and indicates a fresh build.
 
 ## Conclusion
 
-v2.0.47 represents a significant refactoring with the most notable change being the removal of inline SSE logging infrastructure. The code has also been properly formatted for better readability. Further investigation is needed to determine if the SSE logging functionality was moved elsewhere or removed entirely.
+v2.0.47 represents a significant refactoring with the most notable change being the removal of inline SSE logging infrastructure. The code has also been properly formatted for better readability, which increased the file size from 14MB to 15MB due to added whitespace and line breaks. Further investigation is needed to determine if the SSE logging functionality was moved elsewhere or removed entirely.
 
 [Created by Claude: 3e27760d-325d-4745-9901-bd96f4e18f75]
