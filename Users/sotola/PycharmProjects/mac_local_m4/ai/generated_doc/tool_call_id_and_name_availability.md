@@ -96,14 +96,55 @@ with open('/tmp/soto-logs/sse_lines.jsonl', 'r') as f:
                 tool_calls.append(tool_info)
 ```
 
+## Event Sequence: BEFORE and AFTER
+
+**YES**, the tool ID and name come BEFORE the deltas, and there's a stop event AFTER:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. claude.content_block_start (type=tool_use)   ← BEFORE   │
+│    ├─ tool_id: "toolu_016Njo88yBPnFgJsrDRaptfk"            │
+│    └─ tool_name: "Bash"                                     │
+├─────────────────────────────────────────────────────────────┤
+│ 2. claude.content_block_delta (input_json_delta)           │
+│    └─ partial_json: ""                                      │
+│ 3. claude.content_block_delta (input_json_delta)           │
+│    └─ partial_json: "{\"command\": \"ls -la..."             │
+│ 4. claude.content_block_delta (input_json_delta)           │
+│    └─ partial_json: "\", \"description\": \"List..."        │
+│ 5. claude.content_block_delta (input_json_delta)           │
+│    └─ partial_json: "we directory"                          │
+│ 6. claude.content_block_delta (input_json_delta)           │
+│    └─ partial_json: "\"}"                                   │
+├─────────────────────────────────────────────────────────────┤
+│ 7. claude.content_block_stop                    ← AFTER    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Real Example Timeline
+
+```
+Time: 20:44:18.548 | claude.content_block_start  (BEFORE)
+                    → tool_id: toolu_016Njo88yBPnFgJsrDRaptfk
+                    → tool_name: Bash
+
+Time: 20:44:18.561 | claude.content_block_delta (input_json_delta #1)
+Time: 20:44:18.625 | claude.content_block_delta (input_json_delta #2)
+Time: 20:44:18.662 | claude.content_block_delta (input_json_delta #3)
+Time: 20:44:18.745 | claude.content_block_delta (input_json_delta #4)
+Time: 20:44:18.874 | claude.content_block_delta (input_json_delta #5)
+
+Time: 20:44:18.880 | claude.content_block_stop   (AFTER)
+```
+
 ## Relationship with input_json_delta
 
 The tool parameters are streamed via `claude.content_block_delta` events with `delta_type` = `input_json_delta`. These deltas need to be aggregated to get the complete tool input.
 
-### Flow:
-1. `claude.content_block_start` with `type: tool_use` → Contains tool ID and name
-2. Multiple `claude.content_block_delta` with `input_json_delta` → Stream tool parameters
-3. `claude.content_block_stop` → End of tool call
+**The sequence is always:**
+1. **BEFORE**: `claude.content_block_start` with `type: tool_use` → Contains tool ID and name
+2. **DURING**: Multiple `claude.content_block_delta` with `input_json_delta` → Stream tool parameters
+3. **AFTER**: `claude.content_block_stop` → End of tool call
 
 ## Integration with Existing Code
 
@@ -113,4 +154,4 @@ The current code in `inspect_claude_rounds_first_events.py` already processes `i
 2. Extracting tool ID and name when `content_block.type == 'tool_use'`
 3. Joining this information with the aggregated delta content
 
-[Created by Claude: 89cc4096-4fed-4925-9772-50ace2ab8d39]
+[Edited by Claude: 89cc4096-4fed-4925-9772-50ace2ab8d39]
