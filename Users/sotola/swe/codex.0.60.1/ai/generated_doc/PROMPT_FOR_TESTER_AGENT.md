@@ -9,12 +9,20 @@ Your task is to test the Codex round structure implementation to verify that all
 
 ### CRITICAL: Extract Your Suffix First
 
-1. Look at your agent ID above
-2. Extract the LAST 5 characters
-3. This is YOUR suffix - use it for ALL commands below
-4. Example: `6df73118-8050-45c9-8b52-5afe7bc5e0b4` → suffix is `e0b4`
+**YOUR SUFFIX MUST BE EXACTLY 5 CHARACTERS - THE LAST 5 CHARACTERS OF YOUR AGENT ID!**
 
-**NEVER use the example suffixes `e2116` or `e0b4` - those are from other agents!**
+1. Look at your agent ID above
+2. Extract the LAST 5 characters (not 4, not 6 - EXACTLY 5!)
+3. This is YOUR suffix - use it for ALL commands below
+4. Example: `6df73118-8050-45c9-8b52-5afe7bc5e0b4` → suffix is `e0b4` ❌ **WRONG! Only 4 chars!**
+5. Example: `6df73118-8050-45c9-8b52-5afe7bc5e0b4` → suffix is `5e0b4` ✅ **CORRECT! Last 5 chars!**
+
+**Common mistakes:**
+- ❌ `e0b4` - Only 4 characters (missing the `5`)
+- ❌ `c5e0b4` - 6 characters (one too many)
+- ✅ `5e0b4` - Exactly 5 characters from the end
+
+**NEVER use the example suffixes `e2116`, `5e0b4`, or `e0b4` - those are from other agents!**
 
 ### Step-by-Step Instructions
 
@@ -45,12 +53,13 @@ python ai/test_scripts/run_codex_test.py --suffix YOUR_SUFFIX --clean-logs
 
 #### Step 3: Send Follow-Up Prompts
 
-**CRITICAL:** Send prompts WHILE the agent is still working on the first story. This creates the race condition we're testing.
+**CRITICAL:** You MUST send AT LEAST 5 follow-up prompts (not 1, not 2 - AT LEAST 5!). Send them WHILE the agent is still working on the first story. This creates the race condition we're testing.
 
 ```bash
-# Replace YOUR_SUFFIX!
+# Replace YOUR_SUFFIX with YOUR EXACT 5-CHARACTER SUFFIX!
 sleep 15  # Wait for first prompt to start generating
 
+# MUST SEND AT LEAST 5 MESSAGES - DO NOT change {1..5} to a smaller number!
 for i in {1..5}; do
   # Send text first
   tmux send-keys -t codex-test-YOUR_SUFFIX "Write the next chapter of your story, only 200-300 words."
@@ -59,6 +68,16 @@ for i in {1..5}; do
   sleep 2
 done
 ```
+
+**Why 5 messages minimum?**
+- The test requires multiple rapid prompts to create race conditions
+- Fewer than 5 messages won't reliably trigger the queueing logic
+- More than 5 is fine, but 5 is the minimum
+
+**Common mistakes:**
+- ❌ Sending only 1-2 follow-ups (not enough to test race conditions)
+- ❌ Changing `{1..5}` to `{1..2}` (insufficient)
+- ✅ Sending 5 or more follow-ups
 
 **Why separate commands?** Combining text and Enter in one `send-keys` FAILS. You'll see text typed but not executed.
 
@@ -109,14 +128,17 @@ Report back with:
 
 ### Common Pitfalls to Avoid
 
+❌ **DON'T:** Use a suffix that's not exactly 5 characters (must be LAST 5 chars of agent ID)
+❌ **DON'T:** Send fewer than 5 follow-up messages (minimum 5 required!)
 ❌ **DON'T:** Just run the analyzer without generating test data first
-❌ **DON'T:** Use example suffixes like `e2116` or `e0b4`
+❌ **DON'T:** Use example suffixes like `e2116`, `5e0b4`, or `e0b4`
 ❌ **DON'T:** Combine text and Enter in one `tmux send-keys` command
 ❌ **DON'T:** Analyze someone else's test data
 ❌ **DON'T:** Skip the `--clean-logs` flag (old data will pollute results)
 ❌ **DON'T:** Send follow-up prompts too early (before agent starts) or too late (after agent finishes)
 
-✅ **DO:** Extract YOUR agent suffix and use it everywhere
+✅ **DO:** Extract EXACTLY 5 characters from the end of YOUR agent ID
+✅ **DO:** Send AT LEAST 5 follow-up messages (more is fine, but 5 minimum)
 ✅ **DO:** Run the test harness to generate YOUR data
 ✅ **DO:** Send text and Enter as separate `tmux send-keys` commands
 ✅ **DO:** Wait ~15 seconds after starting before sending follow-ups
@@ -127,15 +149,19 @@ Report back with:
 
 Before reporting results, verify:
 
-- [ ] Used MY agent suffix (last 5 chars of MY agent ID)
+- [ ] MY suffix is EXACTLY 5 characters (counted them - not 4, not 6)
+- [ ] MY suffix is the LAST 5 characters of MY agent ID
+- [ ] Used MY suffix everywhere (not example suffixes)
 - [ ] Ran `run_codex_test.py --suffix MY_SUFFIX --clean-logs`
 - [ ] Waited ~15 seconds before sending follow-ups
-- [ ] Sent 5 follow-up prompts with separate text/Enter commands
-- [ ] Verified prompts were executed (saw `›` symbols in tmux)
+- [ ] Sent AT LEAST 5 follow-up prompts (counted them - minimum 5!)
+- [ ] Used separate text/Enter commands for each prompt
+- [ ] Verified prompts were executed (saw 6 total `›` symbols in tmux: 1 initial + 5 follow-ups)
 - [ ] Waited 60 seconds for processing
 - [ ] Ran analyzer with `--suffix MY_SUFFIX`
 - [ ] Log file exists at `/tmp/tester-agent-MY_SUFFIX/sse_lines.jsonl`
-- [ ] Got verbose output showing round structure
+- [ ] Got verbose output showing 6+ user messages
+- [ ] Got verbose output showing 7+ rounds (1 session_configured + 6+ user_message rounds)
 
 ### Example Report Format
 
