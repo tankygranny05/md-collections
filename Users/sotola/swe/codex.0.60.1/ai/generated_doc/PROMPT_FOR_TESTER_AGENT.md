@@ -125,6 +125,15 @@ Report back with:
 4. **Number of user messages sent:** (should be 6 total: 1 initial + 5 follow-ups)
 5. **Any rounds with wrong start events:** (should be 0)
 6. **Full verbose output:** (from `check_codex_data.py -v`)
+7. **MANDATORY:** Verification command at the end of your report
+
+**REQUIRED: Always end your report with this command so the user can verify:**
+
+```bash
+cd /Users/sotola/swe/codex.0.60.1 && python ai/test_scripts/check_codex_data.py --suffix YOUR_SUFFIX -v
+```
+
+Replace `YOUR_SUFFIX` with your actual 5-character suffix.
 
 ### Common Pitfalls to Avoid
 
@@ -169,12 +178,12 @@ Before reporting results, verify:
 Test Results for Codex Round Structure
 ========================================
 
-Agent Suffix: e0b4
+Agent Suffix: 0ce13
 Test Status: PASS ✅
 
 Summary:
 - Total rounds: 7
-- Total events: 14,218
+- Total events: 11,624
 - User messages sent: 6 (1 initial + 5 follow-ups)
 - Rounds with wrong start: 0
 - Exit code: 0
@@ -186,6 +195,9 @@ Verification:
 
 Verbose Output:
 [paste full output from check_codex_data.py -v]
+
+Verify results yourself:
+cd /Users/sotola/swe/codex.0.60.1 && python ai/test_scripts/check_codex_data.py --suffix 0ce13 -v
 ```
 
 ### If You Get Stuck
