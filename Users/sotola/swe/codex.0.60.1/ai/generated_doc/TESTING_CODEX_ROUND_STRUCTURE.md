@@ -8,22 +8,34 @@
 
 1. **NEVER** just run the analyzer script on existing data
 2. **ALWAYS** generate your own test data first by running the test harness
-3. **ALWAYS** use YOUR OWN agent ID suffix (last 5 chars of your agent ID)
-4. **NEVER** use the example suffix `e2116` - that's from the original agent who created this guide
+3. **ALWAYS** use YOUR OWN agent ID suffix (EXACTLY 5 chars - last 5 chars of your agent ID)
+4. **ALWAYS** send AT LEAST 5 follow-up messages (minimum 5 required!)
+5. **NEVER** use the example suffixes `e2116`, `5e0b4`, or `e0b4` - those are from other agents
+
+**CRITICAL REQUIREMENTS:**
+- Suffix length: EXACTLY 5 characters (not 4, not 6)
+- Minimum messages: AT LEAST 5 follow-up prompts (total 6 including initial)
+- Separate commands: Send text and Enter as TWO separate tmux commands
 
 **CORRECT WORKFLOW:**
 ```bash
-# Step 1: Extract YOUR agent suffix (last 5 chars)
+# Step 1: Extract YOUR agent suffix (EXACTLY last 5 chars - count them!)
 # Example: If your agent ID is 6df73118-8050-45c9-8b52-5afe7bc5e0b4
-# Your suffix is: e0b4
+# Your suffix is: 5e0b4 (NOT e0b4 - that's only 4 chars!)
+# Count: 5-e-0-b-4 = 5 characters ✓
 
 # Step 2: Run YOUR OWN test harness
-python ai/test_scripts/run_codex_test.py --suffix e0b4 --clean-logs
+python ai/test_scripts/run_codex_test.py --suffix 5e0b4 --clean-logs
 
-# Step 3: Send follow-up prompts (after ~15s)
+# Step 3: Send AT LEAST 5 follow-up prompts (after ~15s)
+for i in {1..5}; do
+  tmux send-keys -t codex-test-5e0b4 "Write the next chapter of your story, only 200-300 words."
+  tmux send-keys -t codex-test-5e0b4 Enter
+  sleep 2
+done
 
 # Step 4: Analyze YOUR OWN data
-python ai/test_scripts/check_codex_data.py --suffix e0b4 -v
+python ai/test_scripts/check_codex_data.py --suffix 5e0b4 -v
 ```
 
 ## TLDR
@@ -46,21 +58,29 @@ python ai/test_scripts/check_codex_data.py --suffix e0b4 -v
 
 ### 0. Get Your Agent Suffix
 
-**REQUIRED FIRST STEP:** Extract last 5 characters from your agent ID.
+**REQUIRED FIRST STEP:** Extract EXACTLY the last 5 characters from your agent ID.
 
-Example: `6df73118-8050-45c9-8b52-5afe7bc5e0b4` → suffix is `e0b4`
+**Example:**
+- Agent ID: `6df73118-8050-45c9-8b52-5afe7bc5e0b4`
+- Last 5 chars: `5e0b4` (NOT `e0b4` - that's only 4!)
+- Count: `5` - `e` - `0` - `b` - `4` = 5 characters ✓
+
+**Common mistakes:**
+- ❌ `e0b4` (only 4 characters)
+- ❌ `c5e0b4` (6 characters)
+- ✅ `5e0b4` (exactly 5 characters)
 
 ### 1. Run Test Harness (Automated)
 
 ```bash
-# Replace e0b4 with YOUR suffix!
+# Replace 5e0b4 with YOUR 5-CHARACTER suffix!
 cd /Users/sotola/swe/codex.0.60.1
-python ai/test_scripts/run_codex_test.py --suffix e0b4 --clean-logs
+python ai/test_scripts/run_codex_test.py --suffix 5e0b4 --clean-logs
 ```
 
 This will:
-- Create tmux session `codex-test-e0b4`
-- Clean logs at `/tmp/tester-agent-e0b4`
+- Create tmux session `codex-test-5e0b4`
+- Clean logs at `/tmp/tester-agent-5e0b4`
 - Build Codex (`cargo build`)
 - Start Codex with the test prompt
 
@@ -70,22 +90,26 @@ This will:
 sleep 15
 ```
 
-### 3. Send Follow-up Prompts (2-second gaps)
+### 3. Send Follow-up Prompts (MINIMUM 5 REQUIRED!)
 
 ```bash
-# Replace e0b4 with YOUR suffix!
+# Replace 5e0b4 with YOUR 5-CHARACTER suffix!
+# DO NOT change {1..5} to a smaller number - minimum 5 messages required!
 for i in {1..5}; do
   # Send the text
-  tmux send-keys -t codex-test-e0b4 "Write the next chapter of your story, only 200-300 words."
-  # Send Enter separately to execute
-  tmux send-keys -t codex-test-e0b4 Enter
+  tmux send-keys -t codex-test-5e0b4 "Write the next chapter of your story, only 200-300 words."
+  # Send Enter separately to execute (DO NOT combine!)
+  tmux send-keys -t codex-test-5e0b4 Enter
   sleep 2
 done
 ```
 
-**Critical:**
-- Send prompts WHILE agent is still working on previous response to test queueing logic
+**Critical Requirements:**
+- **MUST send AT LEAST 5 follow-up messages** (not 1, not 2 - minimum 5!)
+- Send prompts WHILE agent is still working on first response (creates race conditions)
 - MUST send text and Enter as separate commands, or prompts won't execute!
+
+**Why 5 messages?** Fewer messages won't reliably trigger the queueing logic we're testing.
 
 ### 4. Analyze YOUR Data
 
@@ -93,12 +117,16 @@ done
 # Wait for processing
 sleep 60
 
-# Replace e0b4 with YOUR suffix!
+# Replace 5e0b4 with YOUR 5-CHARACTER suffix!
 cd /Users/sotola/swe/codex.0.60.1
-python ai/test_scripts/check_codex_data.py --suffix e0b4 -v
+python ai/test_scripts/check_codex_data.py --suffix 5e0b4 -v
 ```
 
-**Expected:** Exit code 0, message "✓ All rounds start correctly!"
+**Expected Output:**
+- Exit code 0
+- Message: "✓ All rounds start correctly!"
+- 6+ user messages (1 initial + 5+ follow-ups)
+- 7+ rounds (1 session_configured + 6+ user_message rounds)
 
 **⚠️ CRITICAL:** The analyzer will ONLY work if you ran steps 1-3 first to generate YOUR OWN test data!
 
