@@ -75,13 +75,17 @@ sleep 15
 ```bash
 # Replace e0b4 with YOUR suffix!
 for i in {1..5}; do
+  # Send the text
   tmux send-keys -t codex-test-e0b4 "Write the next chapter of your story, only 200-300 words."
-  tmux send-keys -t codex-test-e0b4 C-m
+  # Send Enter separately to execute
+  tmux send-keys -t codex-test-e0b4 Enter
   sleep 2
 done
 ```
 
-**Critical:** Send prompts WHILE agent is still working on previous response to test queueing logic.
+**Critical:**
+- Send prompts WHILE agent is still working on previous response to test queueing logic
+- MUST send text and Enter as separate commands, or prompts won't execute!
 
 ### 4. Analyze YOUR Data
 
@@ -242,13 +246,20 @@ Hi, write a 2000 words story about China. The subsequent chapters will be 200 to
 
 ### Prompts Not Being Sent in Tmux
 
-**Problem:** Commands typed but never executed (no `›` prompt)
+**Problem:** Commands typed but never executed (no `›` prompt showing submission)
 
-**Solution:** Use separate `send-keys` for text and Enter:
+**Root Cause:** Combining text and Enter in one `send-keys` command often fails
+
+**Solution:** ALWAYS send text and Enter as TWO separate commands:
 
 ```bash
-tmux send-keys -t codex-test-e2116 "Your prompt here"
-tmux send-keys -t codex-test-e2116 C-m  # Send Enter separately
+# CORRECT - Two separate commands
+tmux send-keys -t codex-test-YOUR_SUFFIX "Your prompt here"
+tmux send-keys -t codex-test-YOUR_SUFFIX Enter
+
+# WRONG - Don't combine them
+tmux send-keys -t codex-test-YOUR_SUFFIX "Your prompt here" Enter  # FAILS
+tmux send-keys -t codex-test-YOUR_SUFFIX "Your prompt here" C-m    # FAILS
 ```
 
 ### No Events in Log File
@@ -275,28 +286,45 @@ cargo build && ./target/debug/codex ...
 ## Complete Test Example
 
 ```bash
-# Step 1: Setup tmux and run Codex
-tmux new-session -d -s codex-test-e2116
-tmux send-keys -t codex-test-e2116 "cd /Users/sotola/swe/codex.0.60.1/codex-rs && rm -rf /tmp/tester-agent-e2116 && cargo build && ./target/debug/codex --log-dir /tmp/tester-agent-e2116 'Hi, write a 2000 words story about China. The subsequent chapters will be 200 to 300 worlds long. Don't write to file, print the story out as message for me to read'" C-m
+# ⚠️ Replace YOUR_SUFFIX with last 5 chars of your agent ID!
+SUFFIX="YOUR_SUFFIX"  # e.g., e0b4
+
+# Step 1: Use automated runner (RECOMMENDED)
+cd /Users/sotola/swe/codex.0.60.1
+python ai/test_scripts/run_codex_test.py --suffix $SUFFIX --clean-logs
 
 # Step 2: Wait for agent to start
 sleep 15
 
 # Step 3: Send follow-up prompts
 for i in {1..5}; do
-  tmux send-keys -t codex-test-e2116 "Write the next chapter of your story, only 200-300 words."
-  tmux send-keys -t codex-test-e2116 C-m
+  # Send text
+  tmux send-keys -t codex-test-$SUFFIX "Write the next chapter of your story, only 200-300 words."
+  # Send Enter separately!
+  tmux send-keys -t codex-test-$SUFFIX Enter
   sleep 2
 done
 
 # Step 4: Wait for processing
 sleep 60
 
-# Step 5: Analyze
-cd /Users/sotola/swe/codex.0.60.1
-python ai/test_scripts/check_codex_data.py -v
+# Step 5: Analyze YOUR data
+python ai/test_scripts/check_codex_data.py --suffix $SUFFIX -v
 
 # Expected: Exit code 0, "✓ All rounds start correctly!"
+```
+
+**Alternative Manual Method (if script fails):**
+
+```bash
+SUFFIX="YOUR_SUFFIX"
+
+# Manual setup
+tmux new-session -d -s codex-test-$SUFFIX
+tmux send-keys -t codex-test-$SUFFIX "cd /Users/sotola/swe/codex.0.60.1/codex-rs && rm -rf /tmp/tester-agent-$SUFFIX && cargo build && ./target/debug/codex --log-dir /tmp/tester-agent-$SUFFIX 'Hi, write a 2000 words story about China. The subsequent chapters will be 200 to 300 worlds long. Don'\''t write to file, print the story out as message for me to read'"
+tmux send-keys -t codex-test-$SUFFIX Enter
+
+# Then follow steps 2-5 above
 ```
 
 ---
